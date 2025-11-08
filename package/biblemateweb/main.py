@@ -16,7 +16,22 @@ import os
 # --- Define the Pages ---
 # We define our pages first. The create_menu() function will be
 # called inside each page function to add the shared navigation.
-       
+
+"""
+q - query
+t - token
+m - menu
+
+b - book
+c - chapter
+v - verse
+
+bb - default bible
+cc - default commentary
+ee - default encyclopedia
+ll - default lexicon
+"""
+
 @ui.page('/')
 def page_home(q: str | None = None):
     """
@@ -43,7 +58,7 @@ def page_bibles_chapter(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Read Bible Chapter(s)').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/compare/chapter')
 def page_compare_chapter(q: str | None = None, m: bool = True):
@@ -51,7 +66,7 @@ def page_compare_chapter(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Compare Bible Chapter(s)').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/bibles/verse')
 def page_bibles_verse(q: str | None = None, m: bool = True):
@@ -59,7 +74,7 @@ def page_bibles_verse(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Read Bible Verse(s)').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/compare/verse')
 def page_compare_verse(q: str | None = None, m: bool = True):
@@ -67,7 +82,7 @@ def page_compare_verse(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Compare Bible Verse(s)').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/bibles/audio')
 def page_bibles_audio(q: str | None = None, m: bool = True):
@@ -127,7 +142,7 @@ def page_tool_indexes(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Resource Indexes').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/translations')
 def page_tool_translations(q: str | None = None, m: bool = True):
@@ -135,7 +150,7 @@ def page_tool_translations(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-centermorphology'):
         ui.label('Interlinear, Literal & Dynamic Translations').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/discourse')
 def page_tool_discourse(q: str | None = None, m: bool = True):
@@ -143,7 +158,7 @@ def page_tool_discourse(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Discourse Analysis').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/morphology')
 def page_tool_morphology(q: str | None = None, m: bool = True):
@@ -151,7 +166,7 @@ def page_tool_morphology(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Morphological Data').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/commentary')
 def page_tool_commentary(q: str | None = None, m: bool = True):
@@ -159,7 +174,7 @@ def page_tool_commentary(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Bible Commentaries').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/timelines')
 def page_tool_timelines(q: str | None = None, m: bool = True):
@@ -167,7 +182,7 @@ def page_tool_timelines(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Bible Timelines').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/chronology')
 def page_tool_chronology(q: str | None = None, m: bool = True):
@@ -175,7 +190,7 @@ def page_tool_chronology(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Bible Chronology').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/xref')
 def page_tool_xref(q: str | None = None, m: bool = True):
@@ -183,7 +198,7 @@ def page_tool_xref(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Bible Cross-references').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/tool/tske')
 def page_tool_tske(q: str | None = None, m: bool = True):
@@ -191,7 +206,7 @@ def page_tool_tske(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('The Treasury of Scripture Knowledge (Enhanced)').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 # Search
 
@@ -201,7 +216,7 @@ def page_search_bible(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Bible').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/parallels')
 def page_search_parallels(q: str | None = None, m: bool = True):
@@ -209,7 +224,7 @@ def page_search_parallels(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Parallels').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/promises')
 def page_search_promises(q: str | None = None, m: bool = True):
@@ -217,7 +232,7 @@ def page_search_promises(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Promises').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/topics')
 def page_search_topics(q: str | None = None, m: bool = True):
@@ -225,7 +240,7 @@ def page_search_topics(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Topics').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/names')
 def page_search_names(q: str | None = None, m: bool = True):
@@ -233,7 +248,7 @@ def page_search_names(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Names').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/characters')
 def page_search_characters(q: str | None = None, m: bool = True):
@@ -241,7 +256,7 @@ def page_search_characters(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Characters').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/locations')
 def page_search_locations(q: str | None = None, m: bool = True):
@@ -249,7 +264,7 @@ def page_search_locations(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Locations').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/dictionary')
 def page_search_dictionary(q: str | None = None, m: bool = True):
@@ -257,7 +272,7 @@ def page_search_dictionary(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Dictionary').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/encyclopedia')
 def page_search_encyclopedia(q: str | None = None, m: bool = True):
@@ -265,7 +280,7 @@ def page_search_encyclopedia(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Encyclopedia').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/search/lexicon')
 def page_search_lexicon(q: str | None = None, m: bool = True):
@@ -273,7 +288,7 @@ def page_search_lexicon(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Lexicon').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 # About
 
@@ -309,7 +324,7 @@ def page_ai_qna(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('AI Commentary').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/ai/qna')
 def page_ai_qna(q: str | None = None, m: bool = True):
@@ -317,7 +332,7 @@ def page_ai_qna(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Question & Answer').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/ai/chat')
 def page_ai_chat(q: str | None = None, m: bool = True):
@@ -325,7 +340,7 @@ def page_ai_chat(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Chat Mode').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/ai/partner')
 def page_ai_partner(q: str | None = None, m: bool = True):
@@ -333,7 +348,7 @@ def page_ai_partner(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Partner Mode').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 @ui.page('/ai/agent')
 def page_ai_agent(q: str | None = None, m: bool = True):
@@ -341,7 +356,7 @@ def page_ai_agent(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Agent Mode').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        ui.label('... WORK IN PROGRESS ...')
 
 # --- Shared Menu Function ---
 # This function creates the header, horizontal menu (desktop),
