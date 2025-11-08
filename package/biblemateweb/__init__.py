@@ -6,9 +6,9 @@ BIBLEMATEWEB_USER_DIR = os.path.join(os.path.expanduser("~"), "biblemate")
 BIBLEMATEWEB_DATA = os.path.join(os.path.expanduser("~"), "biblemate", "data")
 if not os.path.isdir(BIBLEMATEWEB_USER_DIR):
     Path(BIBLEMATEWEB_USER_DIR).mkdir(parents=True, exist_ok=True)
-BIBLEMATEWEB_PRIVATE_DATA = os.path.join(os.path.expanduser("~"), "biblemate", "data_private")
-if not os.path.isdir(BIBLEMATEWEB_PRIVATE_DATA):
-    Path(BIBLEMATEWEB_PRIVATE_DATA).mkdir(parents=True, exist_ok=True)
+BIBLEMATEWEB_DATA_CUSTOM = os.path.join(os.path.expanduser("~"), "biblemate", "data_custom")
+if not os.path.isdir(BIBLEMATEWEB_DATA_CUSTOM):
+    Path(BIBLEMATEWEB_DATA_CUSTOM).mkdir(parents=True, exist_ok=True)
 for i in ("audio", "bibles"):
     if not os.path.isdir(os.path.join(BIBLEMATEWEB_DATA, i)):
         Path(os.path.join(BIBLEMATEWEB_DATA, i)).mkdir(parents=True, exist_ok=True)
