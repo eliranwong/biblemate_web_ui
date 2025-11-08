@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 from nicegui import app, ui
 
-from pages.original_oib import original_oib
-
+from biblemateweb.pages.original.reader import original_reader
+from biblemateweb.pages.original.interlinear import original_interlinear
+from biblemateweb.pages.original.parallel import original_parallel
+from biblemateweb.pages.original.discourse import original_discourse
+from biblemateweb.pages.original.linguistic import original_linguistic
 
 # --- Define the Pages ---
 # We define our pages first. The create_menu() function will be
@@ -70,27 +73,13 @@ def page_bible_audio(q: str | None = None, m: bool = True):
 
 # Original Bibles
 
-'''
-🏛️ The Original Bible Suite
-
-Original Reader’s Bible (ORB): The standard text of the original Hebrew & Greek, with instant pop-up parsing and dictionary (lemma) forms for every word.
-
-Original Interlinear Bible (OIB): The original Hebrew & Greek text with a word-for-word, in-line English translation directly beneath each word.
-
-Original Parallel Bible (OPB): The original Hebrew & Greek text displayed side-by-side with a flowing English translation, aligned by verse.
-
-Original Discourse Bible (ODB): The original Hebrew & Greek text dynamically structured by clause, designed to reveal argument flow and narrative structure.
-
-Original Linguistic Bible (OLB): The original Hebrew & Greek text featuring expert linguistic notes on key grammatical, syntactical, and lexical details.
-'''
-
 @ui.page('/original/reader')
 def page_original_reader(q: str | None = None, m: bool = True):
     if m:
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label("Original Reader's Bible").classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        original_reader(q=q)
 
 @ui.page('/original/interlinear')
 def page_original_interlinear(q: str | None = None, m: bool = True):
@@ -98,8 +87,7 @@ def page_original_interlinear(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Original Interlinear Bible').classes('text-2xl mt-4')
-        # example
-        original_oib(q=q)
+        original_interlinear(q=q)
 
 @ui.page('/original/parallel')
 def page_original_parallel(q: str | None = None, m: bool = True):
@@ -107,7 +95,7 @@ def page_original_parallel(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Original Parallel Bible').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        original_parallel()
 
 @ui.page('/original/discourse')
 def page_original_discourse(q: str | None = None, m: bool = True):
@@ -115,7 +103,7 @@ def page_original_discourse(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Original Discourse Bible').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        original_discourse()
 
 @ui.page('/original/linguistic')
 def page_original_linguistic(q: str | None = None, m: bool = True):
@@ -123,7 +111,7 @@ def page_original_linguistic(q: str | None = None, m: bool = True):
         create_menu()
     with ui.column().classes('w-full items-center'):
         ui.label('Original Linguistic Bible').classes('text-2xl mt-4')
-        ui.label('Enjoy')
+        original_linguistic(q=q)
 
 # Tools
 
@@ -297,7 +285,7 @@ def page_source(q: str | None = None, m: bool = True):
         create_menu() # Add the shared menu
     with ui.column().classes('w-full items-center'):
         ui.label('Source Code').classes('text-2xl mt-4')
-        ui.label('https://github.com/eliranwong/biblemate_web')
+        ui.label('https://github.com/eliranwong/biblemateweb')
 
 @ui.page('/contact')
 def page_contact(q: str | None = None, m: bool = True):
@@ -626,8 +614,6 @@ def create_menu():
                 app.storage.user.update(left_drawer_open=False)
             )).props('clickable')
 
-
-
         # About Expansion
         '''with ui.expansion('About Us', icon='info'):
             ui.item('Our Church', on_click=lambda: (
@@ -639,11 +625,15 @@ def create_menu():
                 app.storage.user.update(left_drawer_open=False)
             )).props('clickable')'''
 
-# --- Run the App ---
-# Make sure to replace the secret!
-ui.run(
-    storage_secret='REPLACE_ME_WITH_A_REAL_SECRET',
-    port=9999,
-    title='BibleMate AI',
-    favicon='eliranwong.jpg'
-)
+def main():
+    # --- Run the App ---
+    # Make sure to replace the secret!
+    ui.run(
+        storage_secret='REPLACE_ME_WITH_A_REAL_SECRET',
+        port=9999,
+        title='BibleMate AI',
+        favicon='eliranwong.jpg'
+    )
+
+if __name__ in {"__main__", "__mp_main__"}:
+    main()

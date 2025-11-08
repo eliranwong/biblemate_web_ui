@@ -21,7 +21,6 @@ def original_oib(q: str | None = None):
         };
 
         // Variable used in original script for host interoperability
-        var activeB = "OIB";
 
         function hl0(id, cl, sn) {
             if (cl != '') {

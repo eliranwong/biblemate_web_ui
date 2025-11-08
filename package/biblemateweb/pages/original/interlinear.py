@@ -1,56 +1,11 @@
 from nicegui import ui
+from biblemateweb.css.original import ORIGINAL_CSS
+from biblemateweb.js.original import ORIGINAL_JS
+from biblemateweb.fx.original import *
 import re
 
-def luV(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def luW(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def lex(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def bdbid(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def etcbcmorph(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def rmac(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def searchWord(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
-def searchLexicalEntry(event):
-    # whatever we sent from the browser is available as event.args
-    payload = event.args
-    print(type(payload))
-    print('Server received payload:', payload)
-    ui.notify(f"Server got: {payload}")
 
-def original_oib(q: str | None = None):
+def original_interlinear(q: str | None = None):
 
     # listen for custom event "luW"
     ui.on('luW', luW)
@@ -77,59 +32,10 @@ def original_oib(q: str | None = None):
     content = re.sub(r"""(onclick|ondblclick)='(luV|luW|lex|bdbid|etcbcmorph|rmac|searchLexicalEntry|searchWord)\((.*?)\)'""", r"""\1='emitEvent("\2", [\3]); return false;'""", content)
 
     # Inject JS for interactive highlighting
-    ui.add_head_html("""
-    <script>
-        // MOCK W3.JS (Polyfill to avoid external dependency)
-        var w3 = {
-            addStyle: function(selector, prop, value) {
-                document.querySelectorAll(selector).forEach(function(el) {
-                     el.style.setProperty(prop, value);
-                });
-            }
-        };
+    ui.add_head_html(ORIGINAL_JS)
 
-        // Variable used in original script for host interoperability
-        var activeB = "OIB";
-
-        function hl0(id, cl, sn) {
-            if (cl != '') {
-                w3.addStyle('.c'+cl,'background-color','');
-            }
-            if (sn != '') {
-                w3.addStyle('.G'+sn,'background-color','');
-            }
-            if (id != '') {
-                var focalElement = document.getElementById('w'+id);
-                if (focalElement != null) {
-                    focalElement.style.background='';
-                }
-            }
-        }
-
-        function hl1(id, cl, sn) {
-            if (cl != '') {
-                w3.addStyle('.c'+cl,'background-color','PAPAYAWHIP');
-            }
-            if (sn != '') {
-                w3.addStyle('.G'+sn,'background-color','#E7EDFF');
-            }
-            if (id != '') {
-                var focalElement = document.getElementById('w'+id);
-                if (focalElement != null) {
-                    focalElement.style.background='#C9CFFF';
-                }
-            }
-            // Optional: Updates document title for host-app callbacks.
-            // Uncomment if you are using a wrapper that listens to title changes.
-            // if ((id != '') && (id.startsWith("l") != true)) {
-            //     document.title = "_instantWord:::"+activeB+":::"+id;
-            // }
-        }
-    </script>
-    """)
-
-    # Inject CSS to handle the custom tags and interlinear layout
-    if "<heb>" in content:
+    # Inject CSS to handle the custom tags and layout
+    if "</heb>" in content:
         ui.add_head_html("""
         <style>
             /* Main container for the Bible text - ensures RTL flow for verses */
@@ -139,12 +45,6 @@ def original_oib(q: str | None = None):
                 padding: 20px;
                 background-color: #fafafa;
             }
-            /* Each verse acts as a container for word blocks */
-            verse {
-                display: block;
-                margin-bottom: 20px;
-                line-height: 1.3;
-            }
             /* Verse ID Number */
             vid {
                 color: navy;
@@ -153,29 +53,8 @@ def original_oib(q: str | None = None):
                 margin-left: 10px; /* appears on the right due to RTL */
                 cursor: pointer;
             }
-            /* The interlinear word block container */
-            .int {
-                display: inline-block;
-                vertical-align: top;
-                text-align: center;
-                margin: 0 4px 10px 4px;
-                padding: 4px 8px;
-                background: white;
-                border-radius: 6px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                border: 1px solid #eee;
-                transition: background-color 0.2s; /* Smooth highlight transition */
-            }
-            /* Target all block elements inside .int to tighten their spacing */
-            .int > *, .int > ref > * {
-                line-height: 1.1;
-                margin-top: 1px;
-                margin-bottom: 1px;
-            }
-
-            /* === Individual Layers (some rules override the new rule) === */
             /* Hebrew Word Layer */
-            wform, heb {
+            wform, heb, bdbheb, bdbarc, hu {
                 font-family: 'SBL Hebrew', 'Ezra SIL', serif;
                 font-size: 1.6rem;
                 color: #2c3e50;
@@ -186,23 +65,6 @@ def original_oib(q: str | None = None):
                 margin-bottom: -2px;
                 cursor: pointer;
             }
-            /* Transliteration Layers (Phonetic & SBL) */
-            wsbl, wphono {
-                direction: ltr;
-                display: block;
-                font-size: 0.8rem;
-                color: #7f8c8d;
-                font-style: italic;
-            }
-            /* Morphology Layer */
-            wmorph {
-                direction: ltr;
-                display: block;
-                font-family: monospace;
-                font-size: 0.7rem;
-                color: #27ae60;
-                cursor: pointer;
-            }
             /* Lexical Form & Strong's Number Layers */
             wlex {
                 display: block;
@@ -211,43 +73,9 @@ def original_oib(q: str | None = None):
                 color: #555;
                 cursor: pointer;
             }
-            wsn {
-                direction: ltr;
-                display: block;
-                font-size: 0.7rem;
-                color: #8e44ad;
-                cursor: pointer;
-            }
-
-            /* Gloss (Literal Meaning) Layer */
-            wgloss {
-                direction: ltr;
-                display: block;
-                font-size: 0.85rem;
-                color: #d35400;
-            }
-            /* Final Translation Layer */
-            wtrans {
-                direction: ltr;
-                display: block;
-                margin-top: 4px;
-                padding-top: 3px;
-                border-top: 1px solid #f0f0f0;
-                font-size: 0.95rem;
-                font-weight: bold;
-                color: #2980b9;
-                min-height: 1.2em; /* Ensures empty translations don't collapse the block */
-            }
-
-            /* Hover effects for interactive elements (even if JS isn't active here) */
-            .int:hover {
-                background-color: #f8fbff;
-                border-color: #d6eaf8;
-            }
         </style>
         """)
     else:
-        # This CSS has been MODIFIED for LTR Greek text
         ui.add_head_html("""
         <style>
             /* Main container for the Bible text - LTR flow for Greek */
@@ -257,12 +85,6 @@ def original_oib(q: str | None = None):
                 padding: 20px;
                 background-color: #fafafa;
             }
-            /* Each verse acts as a container for word blocks */
-            verse {
-                display: block;
-                margin-bottom: 20px;
-                line-height: 1.3;
-            }
             /* Verse ID Number */
             vid {
                 color: navy;
@@ -271,52 +93,16 @@ def original_oib(q: str | None = None):
                 margin-right: 10px;
                 cursor: pointer;
             }
-            /* The interlinear word block container */
-            .int {
-                display: inline-block;
-                vertical-align: top;
-                text-align: center;
-                margin: 0 4px 10px 4px;
-                padding: 4px 8px;
-                background: white;
-                border-radius: 6px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                border: 1px solid #eee;
-                transition: background-color 0.2s; /* Smooth highlight transition */
-            }
-            /* Target all block elements inside .int to tighten their spacing */
-            .int > *, .int > ref > * {
-                line-height: 1.1;
-                margin-top: 1px;
-                margin-bottom: 1px;
-            }
-
-            /* === Individual Layers (some rules override the new rule) === */
             /* Greek Word Layer (targets <grk> tag) */
-            wform, grk {
+            wform, grk, kgrk, gu {
                 font-family: 'SBL Greek', 'Galatia SIL', 'Times New Roman', serif; /* CHANGED */
                 font-size: 1.6rem;
                 color: #2c3e50;
-                /* direction: rtl; <-- REMOVED, inherits LTR */
+                direction: ltr;
                 display: inline-block;
                 line-height: 1.2em;
                 margin-top: 0;
                 margin-bottom: -2px;
-                cursor: pointer;
-            }
-            /* Transliteration Layers (Phonetic & SBL) */
-            wsbl, wphono {
-                display: block;
-                font-size: 0.8rem;
-                color: #7f8c8d;
-                font-style: italic;
-            }
-            /* Morphology Layer */
-            wmorph {
-                display: block;
-                font-family: monospace;
-                font-size: 0.7rem;
-                color: #27ae60;
                 cursor: pointer;
             }
             /* Lexical Form (lemma) & Strong's Number Layers */
@@ -327,43 +113,13 @@ def original_oib(q: str | None = None):
                 color: #555;
                 cursor: pointer;
             }
-            wsn {
-                display: block;
-                font-size: 0.7rem;
-                color: #8e44ad;
-                cursor: pointer;
-            }
-
-            /* Gloss (Literal Meaning) Layer */
-            wgloss {
-                direction: ltr;
-                display: block;
-                font-size: 0.85rem;
-                color: #d35400;
-            }
-            /* Final Translation Layer */
-            wtrans {
-                direction: ltr;
-                display: block;
-                margin-top: 4px;
-                padding-top: 3px;
-                border-top: 1px solid #f0f0f0;
-                font-size: 0.95rem;
-                font-weight: bold;
-                color: #2980b9;
-                min-height: 1.2em; /* Ensures empty translations don't collapse the block */
-            }
-
-            /* Hover effects for interactive elements */
-            .int:hover {
-                background-color: #f8fbff;
-                border-color: #d6eaf8;
-            }
         </style>
         """)
+    ui.add_head_html(ORIGINAL_CSS)
 
     # Header
-    ui.label('Original Interlinear Bible (OIB) - Psalm 117').classes('text-2xl font-bold q-mb-md text-center w-full')
+    chapter_title = "Psalm 117" if "</heb>" in content else "2 John" # For testing only
+    ui.label(f'Original Interlinear Bible (OIB) - {chapter_title}').classes('text-2xl font-bold q-mb-md text-center w-full')
 
     # Render the HTML inside a styled container
     # REMEMBER: sanitize=False is required to keep your onclick/onmouseover attributes
