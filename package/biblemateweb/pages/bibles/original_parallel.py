@@ -1,6 +1,6 @@
 from nicegui import ui
 from biblemateweb.css.original import ORIGINAL_CSS
-from biblemateweb.js.original import ORIGINAL_JS
+from biblemateweb.fx.bible import *
 from biblemateweb.fx.original import *
 import re
 
@@ -33,9 +33,6 @@ def original_parallel(q: str | None = None):
     # Convert onclick and ondblclick links
     content = re.sub(r'''(onclick|ondblclick)="(luV|luW|lex|bdbid|etcbcmorph|rmac|searchLexicalEntry|searchWord)\((.*?)\)"''', r'''\1="emitEvent('\2', [\3]); return false;"''', content)
     content = re.sub(r"""(onclick|ondblclick)='(luV|luW|lex|bdbid|etcbcmorph|rmac|searchLexicalEntry|searchWord)\((.*?)\)'""", r"""\1='emitEvent("\2", [\3]); return false;'""", content)
-
-    # Inject JS for interactive highlighting
-    ui.add_head_html(ORIGINAL_JS)
 
     # Inject CSS to handle the custom tags and layout
     if "</heb>" in content:
@@ -128,3 +125,6 @@ def original_parallel(q: str | None = None):
     # Render the HTML inside a styled container
     # REMEMBER: sanitize=False is required to keep your onclick/onmouseover attributes
     ui.html(f'<div class="bible-text">{content}</div>', sanitize=False).classes('w-full')
+
+    # scrolling, e.g.
+    # ui.run_javascript('scrollToVerse("v63.1.10")')

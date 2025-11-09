@@ -1,3 +1,5 @@
+import os
+
 from nicegui import app, ui
 
 from biblemateweb import BIBLEMATEWEB_APP_DIR
@@ -13,7 +15,8 @@ from biblemateweb.pages.tools.chronology import bible_chronology
 
 from biblemateweb.pages.ai.chat import ai_chat
 
-import os
+from biblemateweb.js.bible import BIBLE_JS
+from biblemateweb.js.original import ORIGINAL_JS
 
 
 # Global variable to track current layout
@@ -61,8 +64,14 @@ def create_home_layout():
     global area1_wrapper, area2_wrapper, splitter, is_lt_sm
     global area1_tabs, area2_tabs, area1_tab_panels, area2_tab_panels
     global area1_tab_panels_container, area2_tab_panels_container
+
     # listen to the resize event
     ui.on('resize', check_breakpoint)
+    
+    # Inject JS
+    ui.add_head_html(BIBLE_JS) # for active verse scrolling
+    ui.add_head_html(ORIGINAL_JS) # for interactive highlighting
+
     # Create splitter
     splitter = ui.splitter(value=100, horizontal=is_lt_sm).classes('w-full').style('height: calc(100vh - 64px)')
     
