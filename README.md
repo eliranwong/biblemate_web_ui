@@ -1,6 +1,14 @@
 # BibleMate AI Web
 
-BibleMate AI Web Application - Web UI based on the work at https://github.com/eliranwong/biblemate
+BibleMate AI Web Application - Web UI
+
+BibleMate AI Web Version is designed to combine the most valuable features from the following two projects into a single, unified web interface:
+
+https://github.com/eliranwong/biblemate
+
+and
+
+https://github.com/eliranwong/UniqueBible
 
 # Development in Progress ...
 
@@ -11,6 +19,16 @@ Install for testing:
 Run:
 
 > biblemateweb
+
+## Recent Updates
+
+[Cross-Highlighting & Synchronized Scrolling](https://youtu.be/TDyT1ioesmY)
+
+[![Watch the video](https://img.youtube.com/vi/TDyT1ioesmY/maxresdefault.jpg)](https://youtu.be/TDyT1ioesmY)
+
+[UI Overview](https://youtu.be/UL8b1O97560)
+
+[![Watch the video](https://img.youtube.com/vi/UL8b1O97560/maxresdefault.jpg)](https://youtu.be/UL8b1O97560)
 
 ## Use Existing UniqueBible App Data
 
