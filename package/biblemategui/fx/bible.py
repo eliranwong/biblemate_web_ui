@@ -30,23 +30,44 @@ def getBibleVersionList() -> List[str]:
     bibleVersionList = ["ORB", "OIB", "OPB", "ODB", "OLB"]+list(config.bibles.keys())
     if app.storage.client["custom"]:
         bibleVersionList += list(config.bibles_custom.keys())
+        bibleVersionList = list(set(bibleVersionList))
     return sorted(bibleVersionList)
 
 def getBiblePath(bible) -> str:
-    if bible in ["ORB", "OIB", "OPB", "ODB", "OLB"]:
-        bible = "KJV"
+    if bible in ["ORB", "OIB", "OPB", "ODB", "OLB", "BHS5", "OGNT"]:
+        bible = "OHGB"
     return config.bibles_custom[bible] if bible in config.bibles_custom else config.bibles[bible]
 
-def getBibleChapter(db, b, c) -> str:
+def getBibleChapter(db, b, c) -> str: # html output
     query = "SELECT Scripture FROM Bible WHERE Book=? AND Chapter=?"
     content = ""
+    try:
+        with apsw.Connection(db) as connn:
+            #connn.createscalarfunction("REGEXP", regexp)
+            cursor = connn.cursor()
+            cursor.execute(query, (b, c))
+            if scripture := cursor.fetchone():
+                content = scripture[0]
+    except:
+        try:
+            verses = [formatHTMLverse(i) for i in getBibleChapterVerses(db, b, c)]
+            content = "<br>".join(verses)
+        except Exception as e:
+            content = "Error: "+str(e)
+    return content
+
+def formatHTMLverse(verse) -> str:
+    b, c, v, text = verse
+    return f"""<verse><vid id="v{b}.{c}.{v}" onclick="luV({v})">{v}</vid> {text}</verse>"""
+
+def getBibleChapterVerses(db, b, c) -> str:
+    query = "SELECT * FROM Verses WHERE Book=? AND Chapter=? ORDER BY Verse"
+    verses = []
     with apsw.Connection(db) as connn:
-        #connn.createscalarfunction("REGEXP", regexp)
         cursor = connn.cursor()
         cursor.execute(query, (b, c))
-        if scripture := cursor.fetchone():
-            content = scripture[0]
-    return content
+        verses = cursor.fetchall()
+    return verses
 
 def getBibleBookList(db) -> list:
     query = "SELECT DISTINCT Book FROM Verses ORDER BY Book"
@@ -90,7 +111,7 @@ def change_bible_chapter_verse(_, book, chapter, verse):
 class BibleSelector:
     """Class to manage Bible verse selection with dynamic dropdowns"""
     
-    def __init__(self, on_version_changed=None, on_book_changed=None, on_chapter_changed=None, on_verse_changed=None):
+    def __init__(self, on_version_changed=None, on_book_changed=None, on_chapter_changed=None, on_verse_changed=None, version_options=[]):
         # Handlers that replace the default on_change functions
         self.on_version_changed, self.on_book_changed, self.on_chapter_changed, self.on_verse_changed = on_version_changed, on_book_changed, on_chapter_changed, on_verse_changed
 
@@ -107,19 +128,20 @@ class BibleSelector:
         self.verse_select: Optional[ui.select] = None
         
         # Initialize options
-        self.version_options: List[str] = []
+        self.version_options: List[str] = version_options
         self.book_options: List[str] = []
         self.chapter_options: List[int] = []
         self.verse_options: List[int] = []
         
-    def create_ui(self, bible, b, c, v):
+    def create_ui(self, bible, b, c, v, additional_items=None):
         self.selected_version = bible
         self.selected_book = b
         self.selected_chapter = c
         self.selected_verse = v
 
-        self.version_options = getBibleVersionList()
-        self.book_options = [BibleBooks.abbrev["eng"][str(i)][0] for i in getBibleBookList(getBiblePath(self.selected_version))]
+        if not self.version_options:
+            self.version_options = getBibleVersionList()
+        self.book_options = [BibleBooks.abbrev["eng"][str(i)][0] for i in getBibleBookList(getBiblePath(self.selected_version)) if str(i) in BibleBooks.abbrev["eng"]]
         self.chapter_options = getBibleChapterList(getBiblePath(self.selected_version), self.selected_book)
         self.verse_options = getBibleVerseList(getBiblePath(self.selected_version), self.selected_book, self.selected_chapter)
         with ui.row().classes('w-full'):
@@ -151,6 +173,8 @@ class BibleSelector:
                 value=v,
                 on_change=self.on_verse_change
             )
+            if additional_items:
+                additional_items()
     
     def on_version_change(self, e):
         """Handle Bible version selection change"""
@@ -166,7 +190,7 @@ class BibleSelector:
     
     def on_book_change(self, e):
         """Handle book selection change"""
-        self.selected_book = int(BibleBooks.name2number[e.value]) if e.value in BibleBooks.name2number else int(BibleBooks.name2number[e.value+"."])
+        self.selected_book = BibleBooks.bookNameToNum(e.value)
 
         # replace default action
         if self.on_book_changed is not None:
@@ -197,13 +221,12 @@ class BibleSelector:
     def reset_book_dropdown(self):
         """Reset book dropdown to initial state"""
         book_list = getBibleBookList(getBiblePath(self.selected_version))
-        self.book_options = [BibleBooks.abbrev["eng"][str(i)][0] for i in book_list]
+        self.book_options = [BibleBooks.abbrev["eng"][str(i)][0] for i in book_list if str(i) in BibleBooks.abbrev["eng"]]
         self.book_select.options = self.book_options
         self.book_select.value = self.book_options[0]
         self.selected_book = book_list[0]
         # refresh
-        self.book_select.props('disable')
-        self.book_select.props(remove='disable')
+        self.book_select.update()
     
     def reset_chapter_dropdown(self):
         """Reset chapter dropdown to initial state"""
@@ -212,8 +235,7 @@ class BibleSelector:
         self.chapter_select.value = self.chapter_options[0]
         self.selected_chapter = self.chapter_options[0]
         # refresh
-        self.chapter_select.props('disable')
-        self.chapter_select.props(remove='disable')
+        self.chapter_select.update()
     
     def reset_verse_dropdown(self):
         """Reset verse dropdown to initial state"""
@@ -222,70 +244,8 @@ class BibleSelector:
         self.verse_select.value = self.verse_options[0]
         self.selected_verse = self.verse_options[0]
         # refresh
-        self.verse_select.props('disable')
-        self.verse_select.props(remove='disable')
-    
-    def update_reference_display(self):
-        """Update the displayed Bible reference"""
-        parts = []
-        if self.selected_version:
-            parts.append(self.selected_version)
-        if self.selected_book:
-            parts.append(self.selected_book)
-        if self.selected_chapter:
-            parts.append(f"{self.selected_chapter}")
-        if self.selected_verse:
-            parts[-1] = f"{self.selected_chapter}:{self.selected_verse}"
-        
-        if parts:
-            if len(parts) > 1:
-                # Format as "Version - Book Chapter:Verse"
-                reference = f"{parts[0]} - {' '.join(parts[1:])}"
-            else:
-                reference = parts[0]
-            self.reference_label.set_text(reference)
-        else:
-            self.reference_label.set_text('None selected')
+        self.verse_select.update()
     
     def get_selection(self):
         """Get the current selection and display it"""
-        result = {
-            'version': self.selected_version,
-            'book': self.selected_book,
-            'chapter': self.selected_chapter,
-            'verse': self.selected_verse
-        }
-        
-        # Show notification with selection
-        if all(result.values()):
-            ui.notify(
-                f'Selected: {result["version"]} - {result["book"]} {result["chapter"]}:{result["verse"]}',
-                type='positive'
-            )
-        else:
-            ui.notify('Please complete all selections', type='warning')
-        
-        print(f"Current selection: {result}")
-        return result
-    
-    def set_reference(self, version: str, book: str, chapter: int, verse: int):
-        """Programmatically set a Bible reference"""
-        # Set version
-        if version in self.version_options:
-            self.version_select.value = version
-            self.on_version_change(type('Event', (), {'value': version})())
-            
-            # Set book
-            if book in self.book_options:
-                self.book_select.value = book
-                self.on_book_change(type('Event', (), {'value': book})())
-                
-                # Set chapter
-                if chapter in self.chapter_options:
-                    self.chapter_select.value = chapter
-                    self.on_chapter_change(type('Event', (), {'value': chapter})())
-                    
-                    # Set verse
-                    if verse in self.verse_options:
-                        self.verse_select.value = verse
-                        self.on_verse_change(type('Event', (), {'value': verse})())
+        return (self.selected_version, self.selected_book, self.selected_chapter, self.selected_verse)

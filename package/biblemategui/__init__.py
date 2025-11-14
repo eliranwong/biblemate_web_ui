@@ -54,23 +54,33 @@ def load_config():
 # load user config at startup
 load_config()
 
-from biblemategui import config
-from biblemategui.pages.bibles.original_reader import original_reader
-from biblemategui.pages.bibles.original_interlinear import original_interlinear
-from biblemategui.pages.bibles.original_parallel import original_parallel
-from biblemategui.pages.bibles.original_discourse import original_discourse
-from biblemategui.pages.bibles.original_linguistic import original_linguistic
-from biblemategui.pages.bibles.bible_translation import bible_translation
-config.original_reader = original_reader
-config.original_interlinear = original_interlinear
-config.original_parallel = original_parallel
-config.original_discourse = original_discourse
-config.original_linguistic = original_linguistic
-config.bible_translation = bible_translation
+# bibles resources
+bibles_dir = os.path.join(BIBLEMATEGUI_DATA, "bibles")
+if os.path.isdir(bibles_dir):
+    config.bibles = dict(sorted({os.path.basename(i)[:-6]: i for i in glob.glob(os.path.join(bibles_dir, "*.bible"))}.items()))
+else:
+    Path(bibles_dir).mkdir(parents=True, exist_ok=True)
+    config.bibles = {}
+bibles_dir_custom = os.path.join(BIBLEMATEGUI_DATA_CUSTOM, "bibles")
+if os.path.isdir(bibles_dir_custom):
+    config.bibles_custom = dict(sorted({os.path.basename(i)[:-6]: i for i in glob.glob(os.path.join(bibles_dir_custom, "*.bible"))}.items()))
+else:
+    Path(bibles_dir_custom).mkdir(parents=True, exist_ok=True)
+    config.bibles_custom = {}
+# audio resources
+audio_dir = os.path.join(BIBLEMATEGUI_DATA, "audio", "bibles")
+if os.path.isdir(audio_dir):
+    config.audio = {i: os.path.join(audio_dir, i, "default") for i in os.listdir(audio_dir) if os.path.isdir(os.path.join(audio_dir, i)) and not i in ("BHS5", "OGNT")}
+else:
+    Path(audio_dir).mkdir(parents=True, exist_ok=True)
+    config.audio = {}
+audio_dir_custom = os.path.join(BIBLEMATEGUI_DATA_CUSTOM, "audio", "bibles")
+if os.path.isdir(audio_dir_custom):
+    config.audio_custom = {i: os.path.join(audio_dir_custom, i, "default") for i in os.listdir(audio_dir_custom) if os.path.isdir(os.path.join(audio_dir_custom, i)) and not i in ("BHS5", "OGNT")}
+else:
+    Path(audio_dir_custom).mkdir(parents=True, exist_ok=True)
+    config.audio_custom = {}
 
-# general settings; stored on sever side
-config.bibles = dict(sorted({os.path.basename(i)[:-6]: i for i in glob.glob(os.path.join(BIBLEMATEGUI_DATA, "bibles", "*.bible"))}.items()))
-config.bibles_custom = dict(sorted({os.path.basename(i)[:-6]: i for i in glob.glob(os.path.join(BIBLEMATEGUI_DATA_CUSTOM, "bibles", "*.bible"))}.items()))
 config.available_tools = ["audio", "chronology"]
 
 # User Default Settings

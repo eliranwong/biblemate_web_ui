@@ -1,37 +1,26 @@
-from nicegui import ui
-import asyncio, os
-from biblemategui import BIBLEMATEGUI_DATA
+from nicegui import ui, app
+import asyncio, os, re
+from biblemategui import config
+from biblemategui.fx.bible import *
+from agentmake.plugins.uba.lib.BibleBooks import BibleBooks
 
-# Bible chapter data
-bible_chapter = [
-    [1, "A psalm of David. [1] The LORD is my shepherd; I have what I need."],
-    [2, "He lets me lie down in green pastures; he leads me beside quiet waters."],
-    [3, "He renews my life; he leads me along the right paths for his name’s sake."],
-    [4, "Even when I go through the darkest valley, I fear no danger, for you are with me; your rod and your staff — they comfort me."],
-    [5, "You prepare a table before me in the presence of my enemies; you anoint my head with oil; my cup overflows."],
-    [6, "Only goodness and faithful love will pursue me all the days of my life, and I will dwell in the house of the LORD as long as I live."],
-]
-
-bb = "CSB"
-b = 19
-c = 23
-
-bible_audio_dir = os.path.join(BIBLEMATEGUI_DATA, "audio", "bibles", bb, "default")
-bible_audio = [os.path.join(bible_audio_dir, "19_23", f"{bb}_{b}_{c}_{verse[0]}.mp3") for verse in bible_chapter]
 
 class BibleAudioPlayer:
-    def __init__(self):
+    def __init__(self, text_list: list, audio_list: list, start_verse=1, title="Bible Audio"):
+        self.title = title
+        self.text_list = text_list
+        self.audio_list = audio_list
         self.current_verse = None
         self.is_playing = False
         self.loop_enabled = True
         self.audio_element = None
         self.verse_buttons = {}
-        self.start_verse = 2  # Start with verse 2 when page loads
+        self.start_verse = start_verse  # Start with verse 2 when page loads
         
     def create_ui(self):
         with ui.card().classes('w-full max-w-4xl mx-auto mt-8 p-6'):
             # Title
-            ui.label('Psalm 23').classes('text-3xl font-bold mb-6 text-center')
+            ui.label(self.title).classes('text-3xl font-bold mb-6 text-center')
             
             # Audio player and controls container
             with ui.row().classes('w-full items-center justify-between mb-6 gap-4'):
@@ -50,7 +39,8 @@ class BibleAudioPlayer:
             # Verse list
             with ui.column().classes('w-full gap-2'):
                 with ui.list().props('bordered separator').classes('w-full'):
-                    for verse_num, verse_text in bible_chapter:
+                    for *_, verse_num, verse_text in self.text_list:
+                        verse_text = re.sub('<[^<>]*?>', '', verse_text).strip()
                         with ui.item().classes('w-full hover:bg-gray-50'):
                             with ui.item_section().props('avatar'):
                                 # Audio control button
@@ -88,7 +78,7 @@ class BibleAudioPlayer:
         self.verse_buttons[verse_num].props('icon=volume_up')
         
         # Load and play audio
-        audio_file = bible_audio[verse_num - 1]
+        audio_file = self.audio_list[verse_num - 1]
         self.audio_element.set_source(audio_file)
         self.audio_element.run_method('play')
     
@@ -112,7 +102,7 @@ class BibleAudioPlayer:
             next_verse = self.current_verse + 1
             
             # Check if we've reached the end
-            if next_verse > len(bible_chapter):
+            if next_verse > len(self.text_list):
                 if self.loop_enabled:
                     # Loop back to verse 1
                     self.play_verse(1)
@@ -130,10 +120,39 @@ class BibleAudioPlayer:
         # Start playing from the specified verse
         self.play_verse(self.start_verse)
 
-# Create the application
-player = BibleAudioPlayer()
-
-def bibles_audio(**_):
+def bibles_audio(gui=None, bt="NET", b=1, c=1, v=1, area=2, **_):
+    # version options
+    version_options = list(config.audio.keys())
+    if app.storage.client["custom"]:
+        version_options += list(config.audio_custom.keys())
+        version_options = list(set(version_options))
+    # version
+    if bt in ("ORB", "OIB", "OPB", "ODB", "OLB") and b < 40 and "BHS5" in config.audio:
+        version = "OHGB"
+    elif bt in ("ORB", "OIB", "OPB", "ODB", "OLB") and "OGNT" in config.audio:
+        version = "OHGB"
+    elif app.storage.client["custom"] and bt in config.audio_custom:
+        version = bt
+    elif bt in config.audio:
+        version = bt
+    else:
+        version = "NET"
+    # Bible Selection menu
+    bible_selector = BibleSelector(version_options=sorted(version_options))
+    def additional_items():
+        nonlocal gui, bible_selector, area
+        def change_audio_chapter(selection):
+            app.storage.user['tool_book_text'], app.storage.user['bible_book_number'], app.storage.user['bible_chapter_number'], app.storage.user['bible_verse_number'] = selection
+            gui.load_area_1_content(title="Audio") if area == 1 else gui.load_area_2_content(title="Audio")
+        ui.button('Go', on_click=lambda: change_audio_chapter(bible_selector.get_selection()))
+    bible_selector.create_ui(version, b, c, v, additional_items=additional_items)
+    # Text file list
+    text_list = getBibleChapterVerses(getBiblePath(version), b, c)
+    # Audio file list
+    bible_audio_dir = config.audio_custom[version] if version in config.audio_custom else config.audio[version]
+    audio_list = [os.path.join(bible_audio_dir, f"{b}_{c}", f"{version}_{b}_{c}_{verse[2]}.mp3") for verse in text_list]
+    # Start the player
+    player = BibleAudioPlayer(text_list=text_list, audio_list=audio_list, start_verse=v, title=BibleBooks.abbrev["eng"][str(b)][-1]+f" {c}")
     player.create_ui()
     # Auto-start playing after page loads
     ui.timer(0.5, player.auto_start, once=True)

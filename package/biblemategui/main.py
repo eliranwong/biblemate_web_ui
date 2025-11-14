@@ -43,6 +43,8 @@ def page_home(
     # manage custom resources
     if not config.custom_token or (t and t == config.custom_token) or (app.storage.user.setdefault('custom_token', "") == config.custom_token):
         app.storage.client["custom"] = True # short-term memory (single page visit)
+    else:
+        app.storage.client["custom"] = False
 
     # Use app.storage.user to store session-specific state
     # This keeps the settings unique for each user

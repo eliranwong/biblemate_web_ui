@@ -4,14 +4,21 @@ from functools import partial
 
 from biblemategui import config, BIBLEMATEGUI_APP_DIR
 
-from biblemategui.pages.tools.audio import bibles_audio
-from biblemategui.pages.tools.chronology import bible_chronology
-
 from biblemategui.pages.ai.chat import ai_chat
 
 from biblemategui.js.bible import BIBLE_JS
 from biblemategui.js.original import ORIGINAL_JS
 
+# Import for page content
+from biblemategui.pages.bibles.original_reader import original_reader
+from biblemategui.pages.bibles.original_interlinear import original_interlinear
+from biblemategui.pages.bibles.original_parallel import original_parallel
+from biblemategui.pages.bibles.original_discourse import original_discourse
+from biblemategui.pages.bibles.original_linguistic import original_linguistic
+from biblemategui.pages.bibles.bible_translation import bible_translation
+
+from biblemategui.pages.tools.audio import bibles_audio
+from biblemategui.pages.tools.chronology import bible_chronology
 
 class BibleMateGUI:
     def __init__(self):
@@ -228,20 +235,24 @@ class BibleMateGUI:
         return self.area2_tab_panels_container.value
 
     def get_content(self, title):
-        if title == "ORB":
-            return config.original_reader
+        if title == "Audio":
+            return bibles_audio
+        elif title == "Chronology":
+            return bible_chronology
+        elif title == "ORB":
+            return original_reader
         elif title == "OIB":
-            return config.original_interlinear
+            return original_interlinear
         elif title == "OPB":
-            return config.original_parallel
+            return original_parallel
         elif title == "ODB":
-            return config.original_discourse
+            return original_discourse
         elif title == "OLB":
-            return config.original_linguistic
+            return original_linguistic
         elif app.storage.client["custom"] and title in config.bibles_custom:
-            return config.bible_translation
+            return bible_translation
         elif title in config.bibles:
-            return config.bible_translation
+            return bible_translation
         elif title in config.available_tools:
             return None # TODO
         else:
@@ -496,10 +507,11 @@ class BibleMateGUI:
                             ui.separator()
                             if app.storage.client["custom"] and config.bibles_custom:
                                 for i in config.bibles_custom:
-                                    ui.menu_item(i, on_click=partial(self.load_area_1_content, config.bible_translation, i))
+                                    ui.menu_item(i, on_click=partial(self.load_area_1_content, title=i))
                                 ui.separator()
                             for i in config.bibles:
-                                ui.menu_item(i, on_click=partial(self.load_area_1_content, config.bible_translation, i))
+                                if (app.storage.client["custom"] and not i in config.bibles_custom) or not app.storage.client["custom"]:
+                                    ui.menu_item(i, on_click=partial(self.load_area_1_content, title=i))
 
                     with ui.button(icon='menu_book').props('flat color=white round').tooltip('Parallel Bibles'):
                         with ui.menu():
@@ -514,10 +526,11 @@ class BibleMateGUI:
                             ui.separator()
                             if app.storage.client["custom"] and config.bibles_custom:
                                 for i in config.bibles_custom:
-                                    ui.menu_item(i, on_click=partial(self.load_area_2_content, config.bible_translation, i))
+                                    ui.menu_item(i, on_click=partial(self.load_area_2_content, title=i))
                                 ui.separator()
                             for i in config.bibles:
-                                ui.menu_item(i, on_click=partial(self.load_area_2_content, config.bible_translation, i))
+                                if (app.storage.client["custom"] and not i in config.bibles_custom) or not app.storage.client["custom"]:
+                                    ui.menu_item(i, on_click=partial(self.load_area_2_content, title=i))
                             
 
                     # Bible Tools
@@ -527,7 +540,7 @@ class BibleMateGUI:
                             ui.menu_item('Remove Tool Tab', on_click=self.remove_tab_area2)
                             ui.separator()
                             ui.menu_item('Bible Verse', on_click=lambda: self.load_area_2_content(self.work_in_progress))
-                            ui.menu_item('Bible Audio', on_click=lambda: self.load_area_2_content(bibles_audio, 'Audio'))
+                            ui.menu_item('Bible Audio', on_click=lambda: self.load_area_2_content(title='Audio'))
                             ui.menu_item('Compare Chapter', on_click=lambda: self.load_area_2_content(self.work_in_progress))
                             ui.menu_item('Compare Verse', on_click=lambda: self.load_area_2_content(self.work_in_progress))
                             ui.separator()
@@ -538,7 +551,7 @@ class BibleMateGUI:
                             ui.menu_item('Morphological Data', on_click=lambda: self.load_area_2_content(self.work_in_progress))
                             ui.menu_item('Translation Spectrum', on_click=lambda: self.load_area_2_content(self.work_in_progress))
                             ui.menu_item('Bible Timelines', on_click=lambda: self.load_area_2_content(self.work_in_progress))
-                            ui.menu_item('Bible Chronology', on_click=lambda: self.load_area_2_content(bible_chronology, 'Chronology'))
+                            ui.menu_item('Bible Chronology', on_click=lambda: self.load_area_2_content(title='Chronology'))
                     
                     """with ui.button(icon='book').props('flat color=white round'):
                         with ui.menu():
@@ -619,10 +632,11 @@ class BibleMateGUI:
                         )).props('clickable')
                     ui.separator()
                 for i in config.bibles:
-                    ui.item(i, on_click=lambda: (
-                        self.load_area_1_content(title=i),
-                        app.storage.user.update(left_drawer_open=False)
-                    )).props('clickable')
+                    if (app.storage.client["custom"] and not i in config.bibles_custom) or not app.storage.client["custom"]:
+                        ui.item(i, on_click=lambda: (
+                            self.load_area_1_content(title=i),
+                            app.storage.user.update(left_drawer_open=False)
+                        )).props('clickable')
 
             # Parallel Bibles
             with ui.expansion('Original', icon='book').props('header-class="text-primary"'):
@@ -655,10 +669,11 @@ class BibleMateGUI:
                         )).props('clickable')
                     ui.separator()
                 for i in config.bibles:
-                    ui.item(i, on_click=lambda: (
-                        self.load_area_2_content(title=i),
-                        app.storage.user.update(left_drawer_open=False)
-                    )).props('clickable')
+                    if (app.storage.client["custom"] and not i in config.bibles_custom) or not app.storage.client["custom"]:
+                        ui.item(i, on_click=lambda: (
+                            self.load_area_2_content(title=i),
+                            app.storage.user.update(left_drawer_open=False)
+                        )).props('clickable')
 
             # Bible Tools
             with ui.expansion('Tools', icon='build').props('header-class="text-primary"'):
@@ -667,7 +682,7 @@ class BibleMateGUI:
                     app.storage.user.update(left_drawer_open=False)
                 )).props('clickable')
                 ui.item('Bible Audio', on_click=lambda: (
-                    self.load_area_2_content(bibles_audio, 'Audio'),
+                    self.load_area_2_content(title='Audio'),
                     app.storage.user.update(left_drawer_open=False)
                 )).props('clickable')
                 ui.item('Compare Chapter', on_click=lambda: (
@@ -708,7 +723,7 @@ class BibleMateGUI:
                     app.storage.user.update(left_drawer_open=False)
                 )).props('clickable')
                 ui.item('Bible Chronology', on_click=lambda: (
-                    self.load_area_2_content(self.work_in_progress),
+                    self.load_area_2_content(title='Chronology'),
                     app.storage.user.update(left_drawer_open=False)
                 )).props('clickable')
 
