@@ -34,7 +34,8 @@ def bible_translation(gui=None, b=1, c=1, v=1, area=1, tab1=None, tab2=None, tit
                 direction: rtl;
                 font-family: sans-serif;
                 font-size: 130%;
-                padding: 20px;
+                padding: 5px;
+                margin: 0px;
                 background-color: #fafafa;
             }
             /* Verse ID Number */
@@ -75,7 +76,8 @@ def bible_translation(gui=None, b=1, c=1, v=1, area=1, tab1=None, tab2=None, tit
                 direction: ltr;
                 font-family: sans-serif;
                 font-size: 130%;
-                padding: 20px;
+                padding: 5px;
+                margin: 0px;
                 background-color: #fafafa;
             }
             /* Verse ID Number */

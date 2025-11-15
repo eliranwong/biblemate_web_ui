@@ -20,7 +20,7 @@ CONFIG_FILE_BACKUP = os.path.join(BIBLEMATEGUI_USER_DIR, "biblemategui.config")
 
 def write_user_config():
     """Writes the current configuration to the user's config file."""
-    configurations = f"""config.hot_reload="{config.hot_reload}
+    configurations = f"""config.hot_reload={config.hot_reload}
 config.avatar="{config.avatar}"
 config.custom_token="{config.custom_token}"
 config.storage_secret="{config.storage_secret}"
@@ -99,4 +99,6 @@ USER_DEFAULT_SETTINGS = {
     'language': 'English',
     'dark_mode': False,
     'fullscreen': False,
+    'left_drawer_open': False,
+    'sync': True, # TODO - add disable sync option later
 }

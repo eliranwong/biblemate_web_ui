@@ -46,11 +46,6 @@ def page_home(
     else:
         app.storage.client["custom"] = False
 
-    # Use app.storage.user to store session-specific state
-    # This keeps the settings unique for each user
-    app.storage.user.setdefault('left_drawer_open', False)
-    app.storage.user.setdefault('sync', True) # TODO - add disable sync option later
-
     if l is not None and l in (1, 2, 3):
         app.storage.user['layout'] = l
     else:
@@ -219,9 +214,9 @@ def page_Settings():
                     .bind_value(app.storage.user, 'language')
 
         # --- Save Feedback ---
-        ui.button('Save Confirmation', on_click=lambda: ui.notify('Settings saved!', color='positive')) \
+        ui.button('Home', on_click=lambda: ui.navigate.to('/')) \
             .classes('mt-6 w-full py-3 bg-blue-600 text-white rounded-lg font-semibold') \
-            .tooltip('All settings are saved automatically as you change them. Click this to confirm.')
+            .tooltip('All settings are saved automatically as you change them. Click this to open the home page.')
 
 # Entry_point
 

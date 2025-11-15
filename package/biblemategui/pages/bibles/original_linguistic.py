@@ -41,7 +41,8 @@ def original_linguistic(gui=None, b=1, c=1, v=1, area=1, tab1=None, tab2=None, *
             .bible-text {
                 direction: rtl;
                 font-family: sans-serif;
-                padding: 20px;
+                padding: 5px;
+                margin: 0px;
                 background-color: #fafafa;
             }
             /* Verse ID Number */
@@ -81,7 +82,8 @@ def original_linguistic(gui=None, b=1, c=1, v=1, area=1, tab1=None, tab2=None, *
             .bible-text {
                 direction: ltr;
                 font-family: sans-serif;
-                padding: 20px;
+                padding: 5px;
+                margin: 0px;
                 background-color: #fafafa;
             }
             /* Verse ID Number */

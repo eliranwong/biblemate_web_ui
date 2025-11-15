@@ -87,6 +87,8 @@ class BibleMateGUI:
 
     def create_home_layout(self):
         """Create two scrollable areas with responsive layout"""
+
+        ui.query('.nicegui-content').classes('w-full h-full !p-0 !b-0 !m-0 !gap-0')
         
         # listen to the resize event
         ui.on('resize', self.check_breakpoint)
@@ -127,7 +129,7 @@ class BibleMateGUI:
                         for i in range(1, len(previous_tabs1)+1):
                             tab_id = f'tab1_{i}'
                             saved_tab_id = previous_tabs1[i-1]
-                            with ui.tab_panel(tab_id):
+                            with ui.tab_panel(tab_id).classes('w-full h-full !p-0 !b-0 !m-0 !gap-0'):
                                 self.area1_tab_panels[tab_id] = ui.scroll_area().classes(f'w-full h-full {tab_id}')
                                 with self.area1_tab_panels[tab_id]:
                                     args = app.storage.user.get(saved_tab_id)
@@ -142,7 +144,7 @@ class BibleMateGUI:
                     if len(previous_tabs1) < default_number_of_tabs1:
                         for i in range(len(previous_tabs1)+1, default_number_of_tabs1+1):
                             tab_id = f'tab1_{i}'
-                            with ui.tab_panel(tab_id):
+                            with ui.tab_panel(tab_id).classes('w-full h-full !p-0 !b-0 !m-0 !gap-0'):
                                 self.area1_tab_panels[tab_id] = ui.scroll_area().classes(f'w-full h-full {tab_id}')
                                 with self.area1_tab_panels[tab_id]:
                                     ui.label(f'Bible Area - Tab {i}').classes('text-2xl font-bold mb-4')
@@ -177,7 +179,7 @@ class BibleMateGUI:
                         for i in range(1, len(previous_tabs2)+1):
                             tab_id = f'tab2_{i}'
                             saved_tab_id = previous_tabs2[i-1]
-                            with ui.tab_panel(tab_id):
+                            with ui.tab_panel(tab_id).classes('w-full h-full !p-0 !b-0 !m-0 !gap-0'):
                                 self.area2_tab_panels[tab_id] = ui.scroll_area().classes(f'w-full h-full {tab_id}')
                                 with self.area2_tab_panels[tab_id]:
                                     args = app.storage.user.get(previous_tabs2[i-1])
@@ -192,7 +194,7 @@ class BibleMateGUI:
                     if len(previous_tabs2) < default_number_of_tabs2:
                         for i in range(len(previous_tabs2)+1, default_number_of_tabs2+1):
                             tab_id = f'tab2_{i}'
-                            with ui.tab_panel(tab_id):
+                            with ui.tab_panel(tab_id).classes('w-full h-full !p-0 !b-0 !m-0 !gap-0'):
                                 self.area2_tab_panels[tab_id] = ui.scroll_area().classes(f'w-full h-full {tab_id}')
                                 with self.area2_tab_panels[tab_id]:
                                     ui.label(f'Tool Area - Tab {i}').classes('text-2xl font-bold mb-4')
@@ -235,9 +237,9 @@ class BibleMateGUI:
         return self.area2_tab_panels_container.value
 
     def get_content(self, title):
-        if title == "Audio":
+        if title.lower() == "audio":
             return bibles_audio
-        elif title == "Chronology":
+        elif title.lower() == "chronology":
             return bible_chronology
         elif title == "ORB":
             return original_reader
@@ -369,7 +371,7 @@ class BibleMateGUI:
             ui.tab(new_tab_name, label=f'Bible {self.area1_tab_counter}')
         # Add new tab panel
         with self.area1_tab_panels_container:
-            with ui.tab_panel(new_tab_name):
+            with ui.tab_panel(new_tab_name).classes('w-full h-full !p-0 !b-0 !m-0 !gap-0'):
                 self.area1_tab_panels[new_tab_name] = ui.scroll_area().classes(f'w-full h-full {new_tab_name}')
                 with self.area1_tab_panels[new_tab_name]:
                     ui.label(f'Bible Area - Tab {self.area1_tab_counter}').classes('text-2xl font-bold mb-4')
@@ -413,7 +415,7 @@ class BibleMateGUI:
             ui.tab(new_tab_name, label=f'Tool {self.area2_tab_counter}')
         # Add new tab panel
         with self.area2_tab_panels_container:
-            with ui.tab_panel(new_tab_name):
+            with ui.tab_panel(new_tab_name).classes('w-full h-full !p-0 !b-0 !m-0 !gap-0'):
                 self.area2_tab_panels[new_tab_name] = ui.scroll_area().classes(f'w-full h-full {new_tab_name}')
                 with self.area2_tab_panels[new_tab_name]:
                     ui.label(f'Tool Area - Tab {self.area2_tab_counter}').classes('text-2xl font-bold mb-4')
